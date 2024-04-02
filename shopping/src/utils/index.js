@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 
 const { APP_SECRET } = require("../config");
 
-//Utility functions
 module.exports.GenerateSalt = async () => {
   return await bcrypt.genSalt();
 };
@@ -42,10 +41,16 @@ module.exports.ValidateSignature = async (req) => {
   }
 };
 
-module.exports.FormateData = (data) => {
+module.exports.FormatData = (data) => {
   if (data) {
     return { data };
   } else {
     throw new Error("Data Not found!");
   }
+};
+
+module.exports.PublishCustomerEvent = async (payload) => {
+  axios.post("http://localhost:8000/customer/app-events/", {
+    payload,
+  });
 };
