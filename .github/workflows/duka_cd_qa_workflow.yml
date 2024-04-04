@@ -61,6 +61,6 @@ jobs:
           application_name: duka_qa_nodejs 
           environment_name: Dukaqanodejs-env
           version_label: "ver-${{ github.sha }}"
-          region: eu-central-1
+          region: eu-north-1
           deployment_package: deploy.zip
      
