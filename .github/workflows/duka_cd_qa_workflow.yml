@@ -13,7 +13,11 @@ jobs:
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
-
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      
       - name: Create customer env file
         working-directory: ./customer
         run: |
@@ -54,13 +58,13 @@ jobs:
           zip -r deploy.zip . -x '*.git'
 
       - name: Deploy on Elastic beanstalk QA Env
-        uses: einaregilsson/beanstalk-deploy@v20
+        uses: einaregilsson/beanstalk-deploy@v21
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: duka_qa 
           environment_name: Dukaqa-env
-          version_label: "ver-${{ github.sha }}"
+          version_label: ${{ github.sha }}
           use_existing_version_if_available: true
           region: eu-north-1
           deployment_package: deploy.zip
