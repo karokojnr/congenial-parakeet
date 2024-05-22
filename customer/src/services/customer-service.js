@@ -76,45 +76,57 @@ class CustomerService {
     return FormateData(existingCustomer);
   }
 
-  async GetShopingDetails(id) {
-    const existingCustomer = await this.repository.FindCustomerById({ id });
-
-    if (existingCustomer) {
-      return FormateData(existingCustomer);
-    }
-    return FormateData({ msg: "Error" });
+  async DeleteProfile(userId) {
+    const data = await this.repository.DeleteCustomerById(id);
+    const payload = {
+      event: "DELETE_PROFILE",
+      data: { userId },
+    };
+    return {
+      data,
+      payload,
+    };
   }
 
-  async GetWishList(customerId) {
-    const wishListItems = await this.repository.Wishlist(customerId);
-    return FormateData(wishListItems);
-  }
+  // async GetShopingDetails(id) {
+  //   const existingCustomer = await this.repository.FindCustomerById({ id });
 
-  async AddToWishlist(customerId, product) {
-    const wishlistResult = await this.repository.AddWishlistItem(
-      customerId,
-      product
-    );
-    return FormateData(wishlistResult);
-  }
+  //   if (existingCustomer) {
+  //     return FormateData(existingCustomer);
+  //   }
+  //   return FormateData({ msg: "Error" });
+  // }
 
-  async ManageCart(customerId, product, qty, isRemove) {
-    const cartResult = await this.repository.AddCartItem(
-      customerId,
-      product,
-      qty,
-      isRemove
-    );
-    return FormateData(cartResult);
-  }
+  // async GetWishList(customerId) {
+  //   const wishListItems = await this.repository.Wishlist(customerId);
+  //   return FormateData(wishListItems);
+  // }
 
-  async ManageOrder(customerId, order) {
-    const orderResult = await this.repository.AddOrderToProfile(
-      customerId,
-      order
-    );
-    return FormateData(orderResult);
-  }
+  // async AddToWishlist(customerId, product) {
+  //   const wishlistResult = await this.repository.AddWishlistItem(
+  //     customerId,
+  //     product
+  //   );
+  //   return FormateData(wishlistResult);
+  // }
+
+  // async ManageCart(customerId, product, qty, isRemove) {
+  //   const cartResult = await this.repository.AddCartItem(
+  //     customerId,
+  //     product,
+  //     qty,
+  //     isRemove
+  //   );
+  //   return FormateData(cartResult);
+  // }
+
+  // async ManageOrder(customerId, order) {
+  //   const orderResult = await this.repository.AddOrderToProfile(
+  //     customerId,
+  //     order
+  //   );
+  //   return FormateData(orderResult);
+  // }
 
   async SubscribeEvents(payload) {
     payload = JSON.parse(payload);

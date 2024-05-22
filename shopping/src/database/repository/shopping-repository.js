@@ -1,60 +1,46 @@
 const mongoose = require("mongoose");
 const { OrderModel, CartModel } = require("../models");
 const { v4: uuidv4 } = require("uuid");
+const _ = require("lodash");
 
 class ShoppingRepository {
+  async Cart(customerId) {
+    return await CartModel.findOne({ customerId });
+  }
+
+  async ManageCart(customerId, product, qty, isRemove) {
+    const cart = await CartModel.findOne({ customerId });
+    if (cart) {
+      if (isRemove) {
+        const cartItems = _.filter(
+          cart.items,
+          (item) => item.product._id !== product._id
+        );
+        cart.items = cartItems;
+      } else {
+        const cartIndex = _.findIndex(cart.items, {
+          product: { _id: product._id },
+        });
+        if (cartIndex > -1) {
+          cart.items[cartIndex].unit = qty;
+        } else {
+          cart.items.push({ product: { ...product }, unit: qty });
+        }
+      }
+      return await cart.save();
+    } else {
+      // * create a new one
+      return await CartModel.create({
+        customerId,
+        items: [{ product: { ...product }, unit: qty }],
+      });
+    }
+  }
+
   async Orders(customerId) {
     const orders = await OrderModel.find({ customerId });
 
     return orders;
-  }
-
-  async Cart(customerId) {
-    const cartItems = await CartModel.find({ customerId: customerId });
-
-    if (cartItems) {
-      return cartItems;
-    }
-
-    throw new Error("Data Not found!");
-  }
-
-  async AddCartItem(customerId, item, qty, isRemove) {
-    const cart = await CartModel.findOne({ customerId: customerId });
-
-    const { _id } = item;
-
-    if (cart) {
-      let isExist = false;
-
-      let cartItems = cart.items;
-
-      if (cartItems.length > 0) {
-        cartItems.map((item) => {
-          if (item.product._id.toString() === _id.toString()) {
-            if (isRemove) {
-              cartItems.splice(cartItems.indexOf(item), 1);
-            } else {
-              item.unit = qty;
-            }
-            isExist = true;
-          }
-        });
-      }
-
-      if (!isExist && !isRemove) {
-        cartItems.push({ product: { ...item }, unit: qty });
-      }
-
-      cart.items = cartItems;
-
-      return await cart.save();
-    } else {
-      return await CartModel.create({
-        customerId,
-        items: [{ product: { ...item }, unit: qty }],
-      });
-    }
   }
 
   async CreateNewOrder(customerId, txnId) {

@@ -6,9 +6,26 @@ class ShoppingService {
     this.repository = new ShoppingRepository();
   }
 
-  async GetCart({ _id }) {
-    const cartItems = await this.repository.Cart(_id);
-    return FormatData(cartItems);
+  async AddCartItem(customerId, productId, qty) {
+    const productResponse = {};
+    if (productResponse && productResponse._id) {
+      const data = await this.repository.ManageCart(
+        customerId,
+        productResponse,
+        qty,
+        false
+      );
+      return data;
+    }
+    throw new Error("Product data not found");
+  }
+
+  async RemoveCartItem(customerId, productId) {
+    return await this.repository.ManageCart(customerId, { _id: productId }, 0, true);
+  }
+
+  async GetCart(_id) {
+    return this.repository.Cart(_id);
   }
 
   async PlaceOrder(userInput) {

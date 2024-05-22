@@ -59,115 +59,119 @@ class CustomerRepository {
     return existingCustomer;
   }
 
-  async Wishlist(customerId) {
-    const profile = await CustomerModel.findById(customerId).populate(
-      "wishlist"
-    );
-
-    return profile.wishlist;
+  async DeleteCustomerById({ id }) {
+    await CustomerModel.findByIdAndDelete(id);
   }
 
-  async AddWishlistItem(
-    customerId,
-    { _id, name, desc, price, available, banner }
-  ) {
-    const product = {
-      _id,
-      name,
-      desc,
-      price,
-      available,
-      banner,
-    };
+  // async Wishlist(customerId) {
+  //   const profile = await CustomerModel.findById(customerId).populate(
+  //     "wishlist"
+  //   );
 
-    const profile = await CustomerModel.findById(customerId).populate(
-      "wishlist"
-    );
+  //   return profile.wishlist;
+  // }
 
-    if (profile) {
-      let wishlist = profile.wishlist;
+  // async AddWishlistItem(
+  //   customerId,
+  //   { _id, name, desc, price, available, banner }
+  // ) {
+  //   const product = {
+  //     _id,
+  //     name,
+  //     desc,
+  //     price,
+  //     available,
+  //     banner,
+  //   };
 
-      if (wishlist.length > 0) {
-        let isExist = false;
-        wishlist.map((item) => {
-          if (item._id.toString() === product._id.toString()) {
-            const index = wishlist.indexOf(item);
-            wishlist.splice(index, 1);
-            isExist = true;
-          }
-        });
+  //   const profile = await CustomerModel.findById(customerId).populate(
+  //     "wishlist"
+  //   );
 
-        if (!isExist) {
-          wishlist.push(product);
-        }
-      } else {
-        wishlist.push(product);
-      }
+  //   if (profile) {
+  //     let wishlist = profile.wishlist;
 
-      profile.wishlist = wishlist;
-    }
+  //     if (wishlist.length > 0) {
+  //       let isExist = false;
+  //       wishlist.map((item) => {
+  //         if (item._id.toString() === product._id.toString()) {
+  //           const index = wishlist.indexOf(item);
+  //           wishlist.splice(index, 1);
+  //           isExist = true;
+  //         }
+  //       });
 
-    const profileResult = await profile.save();
+  //       if (!isExist) {
+  //         wishlist.push(product);
+  //       }
+  //     } else {
+  //       wishlist.push(product);
+  //     }
 
-    return profileResult.wishlist;
-  }
-  async AddCartItem(customerId, { _id, name, price, banner }, qty, isRemove) {
-    const profile = await CustomerModel.findById(customerId).populate("cart");
+  //     profile.wishlist = wishlist;
+  //   }
 
-    if (profile) {
-      const cartItem = {
-        product: { _id, name, price, banner },
-        unit: qty,
-      };
+  //   const profileResult = await profile.save();
 
-      let cartItems = profile.cart;
+  //   return profileResult.wishlist;
+  // }
+  // async AddCartItem(customerId, { _id, name, price, banner }, qty, isRemove) {
+  //   const profile = await CustomerModel.findById(customerId).populate("cart");
 
-      if (cartItems.length > 0) {
-        let isExist = false;
-        cartItems.map((item) => {
-          if (item.product._id.toString() === _id.toString()) {
-            if (isRemove) {
-              cartItems.splice(cartItems.indexOf(item), 1);
-            } else {
-              item.unit = qty;
-            }
-            isExist = true;
-          }
-        });
+  //   if (profile) {
+  //     const cartItem = {
+  //       product: { _id, name, price, banner },
+  //       unit: qty,
+  //     };
 
-        if (!isExist) {
-          cartItems.push(cartItem);
-        }
-      } else {
-        cartItems.push(cartItem);
-      }
+  //     let cartItems = profile.cart;
 
-      profile.cart = cartItems;
+  //     if (cartItems.length > 0) {
+  //       let isExist = false;
+  //       cartItems.map((item) => {
+  //         if (item.product._id.toString() === _id.toString()) {
+  //           if (isRemove) {
+  //             cartItems.splice(cartItems.indexOf(item), 1);
+  //           } else {
+  //             item.unit = qty;
+  //           }
+  //           isExist = true;
+  //         }
+  //       });
 
-      return await profile.save();
-    }
+  //       if (!isExist) {
+  //         cartItems.push(cartItem);
+  //       }
+  //     } else {
+  //       cartItems.push(cartItem);
+  //     }
 
-    throw new Error("Unable to add to cart!");
-  }
+  //     profile.cart = cartItems;
 
-  async AddOrderToProfile(customerId, order) {
-    const profile = await CustomerModel.findById(customerId);
+  //     return await profile.save();
+  //   }
 
-    if (profile) {
-      if (profile.orders == undefined) {
-        profile.orders = [];
-      }
-      profile.orders.push(order);
+  //   throw new Error("Unable to add to cart!");
+  // }
 
-      profile.cart = [];
+  // async AddOrderToProfile(customerId, order) {
+  //   const profile = await CustomerModel.findById(customerId);
 
-      const profileResult = await profile.save();
+  //   if (profile) {
+  //     if (profile.orders == undefined) {
+  //       profile.orders = [];
+  //     }
+  //     profile.orders.push(order);
 
-      return profileResult;
-    }
+  //     profile.cart = [];
 
-    throw new Error("Unable to add to order!");
-  }
+  //     const profileResult = await profile.save();
+
+  //     return profileResult;
+  //   }
+
+  //   throw new Error("Unable to add to order!");
+  // }
 }
 
 module.exports = CustomerRepository;

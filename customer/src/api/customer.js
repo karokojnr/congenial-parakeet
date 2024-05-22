@@ -1,11 +1,9 @@
 const CustomerService = require("../services/customer-service");
 const UserAuth = require("./middlewares/auth");
-const { SubscribeToMessages } = require("../utils");
+const { PublishMessage } = require("../utils");
 
 module.exports = (app, channel) => {
   const service = new CustomerService();
-
-  SubscribeToMessages(channel, service);
 
   app.post("/signup", async (req, res, next) => {
     const { email, password, phone } = req.body;
@@ -42,17 +40,11 @@ module.exports = (app, channel) => {
     res.json(data);
   });
 
-  app.get("/shoping-details", UserAuth, async (req, res, next) => {
+  app.delete("/profile", UserAuth, async (req, res, next) => {
     const { _id } = req.user;
-    const { data } = await service.GetShopingDetails(_id);
-
-    return res.json(data);
-  });
-
-  app.get("/wishlist", UserAuth, async (req, res, next) => {
-    const { _id } = req.user;
-    const { data } = await service.GetWishList(_id);
-    return res.status(200).json(data);
+    const { data, payload } = await service.DeleteProfile(_id);
+    PublishMessage(channel, SHOPPING_SERVICE, JSON.stringify(payload));
+    res.json(data);
   });
 
   app.get("/whoami", (req, res, next) => {
